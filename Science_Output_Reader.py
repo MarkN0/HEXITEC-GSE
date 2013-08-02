@@ -1,11 +1,38 @@
+import struct
+import numpy
+from struct import *
 from numpy import *
 
 def readi(f,n):        
-    #x = zeros(n,int);    
-    #for i in range(0,n):
-        #x[i] = struct.unpack('i',f.read(4))[0];
-    return struct.unpack('%di' %n,f.read(4*n))[0];
+    try:
+        return struct.unpack('%di' %n,f.read(4*n))
+    except:
+        return ()
 
+capturedata = hexitec_exposure()
+
+f = open("HEXITEC_CalTable.dat","rb")
+newval = readi(f,1)
+calstream = capturedata.loadcaltable()
+calstream.next()
+while len(newval) == 1:
+    calstream.send(newval[0])
+    newval = readi(f,1)
+calstream.close()
+f.close()
+f = open("Science_Output.dat","rb")
+newval = readi(f,1)
+scistream = capturedata.unpack()
+scistream.next()
+while len(newval) == 1:
+    scistream.send(newval[0])
+    newval = readi(f,1)
+scistream.close()
+f.close()
+
+
+
+''' this is the old version of this program (didn't utilize exposure object)
 def dec2bin(n,m):
     x = zeros(m,int);
     for i in range(0,m):
@@ -41,4 +68,4 @@ for i in range(0,2):
                  inbuffer[0:1] = readi(f,1);
                  images[i][r][c] = inbuffer[0] + (384 * (1 - rawflags[i][r]));
     readi(f,1);
-f.close();
+f.close();'''
