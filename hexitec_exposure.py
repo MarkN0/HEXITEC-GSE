@@ -13,32 +13,44 @@ def dec2bin(n,m):     #need to do away with this function (see masks below)
         x[i] = (n//(2**i))%2;
     return x;
 
-class hexitec_image:  #need to implement a way to copy images or create new images... python is a bit strange with the way it copies objects...
-    samples = zeros((80,80),int)
-    rowbufIDs = zeros(80,int)
-    rowIDs = zeros(80,int)
-    mask = zeros((80,80),int)   #need to come up with a better representation for masks... this approach is clearly wasteful
-    rawflags = zeros(80,int)
-    endsync = 0
-    def reset(self):
-        self.samples = zeros((80,80),int)
-        self.rowbufIDs = zeros(80,int)
-        self.rowIDs = zeros(80,int)
-        self.mask = zeros((80,80),int)
-        self.rawflags = zeros(80,int)
-        self.endsync = 0
+
+class test_class:
+    def __init__(self):
+        self.y = []
+        self.data = self.begin()
+        self.data.next()
     
+    def begin(self):
+        for i in range(0,10):
+            self.y.append((yield))
+        print self.y
+
+
 class hexitec_exposure:
-    images = []
+    #images = []
         #TO DO:  add member functions for the following activities:
         #export calibration table
         #export data set
         #generate calibration table (from data)
         #possibly methods for converting to hyperspectral image and simple spectrum
-    def _init_(self):
-        self.images = []
-        self.caltable = zeros((80,80),int)
+    #def __new__(self):
+        #pass
+    
+    def __init__(self):
+        self.validimages = 0        
+        self.samples = zeros((1000,80,80),int)
+        self.rowbufIDs = zeros((1000,80),int)
+        self.rowIDs = zeros((1000,80),int)
+        self.mask = zeros((1000,80,80),int)
+        self.rawflags = zeros((1000,80),int)
+        self.endsync = zeros(1000,int)
+        self.caltable = zeros((1000,80,80),int)
         self.caloffset = 0;
+        
+        self.caldata = self.loadcaltable()
+        self.caldata.next()
+        self.imgdata = self.loadimagedata()
+        self.imgdata.next()
         
     def loadcaltable(self):
         newcaltable = zeros((80,80),int)        
@@ -54,9 +66,8 @@ class hexitec_exposure:
         while 1:
             (yield)
             
-    def unpack(self):
+    def loadimagedata(self):
         inbuffer = zeros(9,int)
-        newimage = hexitec_image()
         while 1:
             while (yield) != 0xFE6B:  #search for sync pattern
                 pass
@@ -67,21 +78,21 @@ class hexitec_exposure:
             for r in range(0,80):
                 for b in range(0,9):    
                     inbuffer[b] = (yield)
-                newimage.rowbufIDs[r] = (inbuffer[0] & 0x3c00) >> 10
-                newimage.rowIDs[r] = inbuffer[0] & 0x00ff
-                newimage.rawflags[r] = (inbuffer[0] & 0x0100) >> 8
-                newimage.mask[r][14:20] = dec2bin(inbuffer[1]%(2**6),6)   #need a more efficient way to handle these masks
-                newimage.mask[r][0:14] = dec2bin(inbuffer[2]%(2**14),14)
-                newimage.mask[r][34:40] = dec2bin(inbuffer[3]%(2**6),6)
-                newimage.mask[r][20:34] = dec2bin(inbuffer[4]%(2**14),14)
-                newimage.mask[r][54:60] = dec2bin(inbuffer[5]%(2**6),6)
-                newimage.mask[r][40:54] = dec2bin(inbuffer[6]%(2**14),14)
-                newimage.mask[r][74:80] = dec2bin(inbuffer[7]%(2**6),6)
-                newimage.mask[r][60:74] = dec2bin(inbuffer[8]%(2**14),14)
+                self.rowbufIDs[self.validimages][r] = (inbuffer[0] & 0x3c00) >> 10
+                self.rowIDs[self.validimages][r] = inbuffer[0] & 0x00ff
+                self.rawflags[self.validimages][r] = (inbuffer[0] & 0x0100) >> 8
+                self.mask[self.validimages][r][14:20] = dec2bin(inbuffer[1]%(2**6),6)   #need a more efficient way to handle these masks
+                self.mask[self.validimages][r][0:14] = dec2bin(inbuffer[2]%(2**14),14)
+                self.mask[self.validimages][r][34:40] = dec2bin(inbuffer[3]%(2**6),6)
+                self.mask[self.validimages][r][20:34] = dec2bin(inbuffer[4]%(2**14),14)
+                self.mask[self.validimages][r][54:60] = dec2bin(inbuffer[5]%(2**6),6)
+                self.mask[self.validimages][r][40:54] = dec2bin(inbuffer[6]%(2**14),14)
+                self.mask[self.validimages][r][74:80] = dec2bin(inbuffer[7]%(2**6),6)
+                self.mask[self.validimages][r][60:74] = dec2bin(inbuffer[8]%(2**14),14)
                 for c in range(0,80):
-                    if newimage.mask[r][c] == 1:
+                    if self.mask[self.validimages][r][c] == 1:
                         inbuffer[0] = (yield)
-                        newimage.samples[r][c] = inbuffer[0] + ((self.caloffset + self.caltable[r][c]) * (1 - rawflags[i][r]))
-            newimage.endsync = (yield)
-            self.images.append(newimage)
-            newimage.reset()
+                        self.samples[self.validimages][r][c] = inbuffer[0] + ((self.caloffset + self.caltable[r][c]) * (1 - rawflags[i][r]))
+            self.endsync[self.validimages] = (yield)
+            self.validimages += 1
+            

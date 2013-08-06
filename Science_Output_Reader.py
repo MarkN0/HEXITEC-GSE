@@ -1,5 +1,7 @@
 import struct
 import numpy
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from struct import *
 from numpy import *
 
@@ -9,28 +11,28 @@ def readi(f,n):
     except:
         return ()
 
-capturedata = hexitec_exposure()
+newexposure = hexitec_exposure()
 
 f = open("HEXITEC_CalTable.dat","rb")
 newval = readi(f,1)
-calstream = capturedata.loadcaltable()
-calstream.next()
 while len(newval) == 1:
-    calstream.send(newval[0])
+    newexposure.caldata.send(newval[0])
     newval = readi(f,1)
-calstream.close()
+newexposure.caldata.close()
 f.close()
 f = open("Science_Output.dat","rb")
 newval = readi(f,1)
-scistream = capturedata.unpack()
-scistream.next()
 while len(newval) == 1:
-    scistream.send(newval[0])
+    newexposure.imgdata.send(newval[0])
     newval = readi(f,1)
-scistream.close()
+newexposure.imgdata.close()
 f.close()
 
-
+subplot(2,1,1)
+imgplot = plt.imshow(newexposure.samples[0],aspect='equal')
+subplot(2,1,2)
+(x,y) = histogram(newexposure.samples[0:newexposure.validimages],bins=2000,range=(9000,13000))
+bar(y[0:2000],x[0:2000])
 
 ''' this is the old version of this program (didn't utilize exposure object)
 def dec2bin(n,m):
