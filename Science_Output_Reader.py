@@ -29,10 +29,15 @@ newexposure.imgdata.close()
 f.close()
 
 subplot(2,1,1)
+cla()
 imgplot = plt.imshow(newexposure.samples[0],aspect='equal')
 subplot(2,1,2)
-(x,y) = histogram(newexposure.samples[0:newexposure.validimages],bins=2000,range=(9000,13000))
-bar(y[0:2000],x[0:2000])
+cla()
+rmin = min(newexposure.samples[(newexposure.mask>0)])
+rmax = max(newexposure.samples[(newexposure.mask>0)])
+nbins = (rmax-rmin)/2
+(x,y) = histogram(newexposure.samples[0:newexposure.validimages],bins=nbins,range=(rmin,rmax))
+bar(y[0:nbins],x[0:nbins])
 
 ''' this is the old version of this program (didn't utilize exposure object)
 def dec2bin(n,m):

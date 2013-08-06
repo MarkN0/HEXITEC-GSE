@@ -41,7 +41,7 @@ class hexitec_exposure:
         self.samples = zeros((1000,80,80),int)
         self.rowbufIDs = zeros((1000,80),int)
         self.rowIDs = zeros((1000,80),int)
-        self.mask = zeros((1000,80,80),int)
+        self.mask = zeros((1000,80,80),bool)
         self.rawflags = zeros((1000,80),int)
         self.endsync = zeros(1000,int)
         self.caltable = zeros((1000,80,80),int)
