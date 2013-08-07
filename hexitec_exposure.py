@@ -58,14 +58,14 @@ class hexitec_exposure:
         newcaloffset = (yield)
         for r in range (0,80):
             for c in range (0,20):
-                newcaltable[r][c+140] = (yield)
-                newcaltable[r][c+120] = (yield)
-                newcaltable[r][c+100] = (yield)
-                newcaltable[r][c+80] = (yield)
-                newcaltable[r][c+60] = (yield)
-                newcaltable[r][c+40] = (yield)
-                newcaltable[r][c+20] = (yield)
                 newcaltable[r][c] = (yield)
+                newcaltable[r][c+20] = (yield)
+                newcaltable[r][c+40] = (yield)
+                newcaltable[r][c+60] = (yield)
+                newcaltable[r][c+80] = (yield)
+                newcaltable[r][c+100] = (yield)
+                newcaltable[r][c+120] = (yield)
+                newcaltable[r][c+140] = (yield)
         self.caloffset = newcaloffset
         self.caltable = newcaltable
         while 1:
@@ -105,7 +105,7 @@ class hexitec_exposure:
                 for c in range(0,160):
                     if self.mask[self.validimages][r][c] == 1:
                         inbuffer[0] = (yield)
-                        self.samples[self.validimages][r][c] = inbuffer[0] + ((self.caloffset + self.caltable[r][c]) * (1 - rawflags[i][r]))
+                        self.samples[self.validimages][r][c] = inbuffer[0] + ((self.caloffset + self.caltable[r][c]) * (1 - self.rawflags[self.validimages][r]))
             self.endsync[self.validimages] = (yield)
             self.validimages += 1
             
