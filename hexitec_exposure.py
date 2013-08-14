@@ -32,6 +32,7 @@ class hexitec_exposure:
         #export calibration table
         #export data set
         #generate calibration table (from data)
+        #implement some error rejection capability into the loadimagedata routine
         #possibly methods for converting to hyperspectral image and simple spectrum
         #come up with a way to dynamically scale this object to handle n asics
     #def __new__(self):
