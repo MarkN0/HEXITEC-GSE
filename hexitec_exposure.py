@@ -41,6 +41,7 @@ class hexitec_exposure:
     def __init__(self):
         self.validimages = 0        
         self.samples = zeros((1000,80,160),int)
+        self.timestamps = zeros(1000,long)
         self.rowbufIDs = zeros((1000,80),int)
         self.rowIDs = zeros((1000,80),int)
         self.mask = zeros((1000,80,160),bool)
@@ -59,50 +60,31 @@ class hexitec_exposure:
         newcaloffset = (yield)
         for r in range (0,80):
             for c in range (0,20):
-                newcaltable[r][c] = (yield)
-                newcaltable[r][c+20] = (yield)
-                newcaltable[r][c+40] = (yield)
-                newcaltable[r][c+60] = (yield)
-                newcaltable[r][c+80] = (yield)
-                newcaltable[r][c+100] = (yield)
-                newcaltable[r][c+120] = (yield)
-                newcaltable[r][c+140] = (yield)
+                for g in range (0,141,20):             
+                    newcaltable[r][c+g] = (yield)
         self.caloffset = newcaloffset
         self.caltable = newcaltable
         while 1:
             (yield)
             
     def loadimagedata(self):
-        inbuffer = zeros(17,int)
+        inbuffer = zeros(17,long)
         while 1:
             while (yield) != 0xFE6B:  #search for sync pattern
                 pass
             for b in range(0,3):
                 inbuffer[b] = (yield)
-            #this timestamps
-            #timestamps[i] = (buffer[1]%(2**16)) * 2**32 + (buffer[2]%(2**16)) * 2**16 + buffer[3]  #need to solve overflow error...
+                print inbuffer[b]%(2**16) << 16
+            self.timestamps[self.validimages] = ((inbuffer[0]%(2**16)) << 32) + ((inbuffer[1]%(2**16)) << 16) + (inbuffer[2]%(2**16))
             for r in range(0,80):
-                for b in range(0,17):    
+                for b in range(0,17):
                     inbuffer[b] = (yield)
                 self.rowbufIDs[self.validimages][r] = (inbuffer[0] & 0x3c00) >> 10
                 self.rowIDs[self.validimages][r] = inbuffer[0] & 0x00ff
                 self.rawflags[self.validimages][r] = (inbuffer[0] & 0x0100) >> 8
-                self.mask[self.validimages][r][14:20] = dec2bin(inbuffer[1]%(2**6),6)   #need a more efficient way to handle these masks
-                self.mask[self.validimages][r][0:14] = dec2bin(inbuffer[2]%(2**14),14)
-                self.mask[self.validimages][r][34:40] = dec2bin(inbuffer[3]%(2**6),6)
-                self.mask[self.validimages][r][20:34] = dec2bin(inbuffer[4]%(2**14),14)
-                self.mask[self.validimages][r][54:60] = dec2bin(inbuffer[5]%(2**6),6)
-                self.mask[self.validimages][r][40:54] = dec2bin(inbuffer[6]%(2**14),14)
-                self.mask[self.validimages][r][74:80] = dec2bin(inbuffer[7]%(2**6),6)
-                self.mask[self.validimages][r][60:74] = dec2bin(inbuffer[8]%(2**14),14)
-                self.mask[self.validimages][r][94:100] = dec2bin(inbuffer[9]%(2**6),6)   #need a more efficient way to handle these masks
-                self.mask[self.validimages][r][80:94] = dec2bin(inbuffer[10]%(2**14),14)
-                self.mask[self.validimages][r][114:120] = dec2bin(inbuffer[11]%(2**6),6)
-                self.mask[self.validimages][r][100:114] = dec2bin(inbuffer[12]%(2**14),14)
-                self.mask[self.validimages][r][134:140] = dec2bin(inbuffer[13]%(2**6),6)
-                self.mask[self.validimages][r][120:134] = dec2bin(inbuffer[14]%(2**14),14)
-                self.mask[self.validimages][r][154:160] = dec2bin(inbuffer[15]%(2**6),6)
-                self.mask[self.validimages][r][140:154] = dec2bin(inbuffer[16]%(2**14),14)
+                for g in range(0,16,2):
+                    self.mask[self.validimages][r][(14+(10*g)):(20+(10*g))] = dec2bin(inbuffer[1+g]%(2**6),6)   #need a more efficient way to handle these masks
+                    self.mask[self.validimages][r][(0+(10*g)):(14+(10*g))] = dec2bin(inbuffer[2+g]%(2**14),14)
                 for c in range(0,160):
                     if self.mask[self.validimages][r][c] == 1:
                         inbuffer[0] = (yield)
