@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1062</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="MatplotlibWidget" name="mplwidget">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>20</y>
+      <width>661</width>
+      <height>261</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="MatplotlibWidget" name="mplwidget_2">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>280</y>
+      <width>661</width>
+      <height>261</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>131</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>From File</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>USB Device</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>341</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Commanding</string>
+    </property>
+    <widget class="QPushButton" name="CommandSend">
+     <property name="geometry">
+      <rect>
+       <x>250</x>
+       <y>20</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Send</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="CommandVal">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>20</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="CommandList">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>131</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Start Data Collection</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Stop Data Collection</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Request Status</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Enable Raw Mode</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Set S1 Delay</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Set SPH Delay</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Set S2 Delay</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Set ADC Latency</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Set Cal Offset LSB</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Set Cal Offset MSB</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>341</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Calibration Table</string>
+    </property>
+    <widget class="QComboBox" name="comboBox_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>131</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <zorder>groupBox</zorder>
+   <zorder>mplwidget</zorder>
+   <zorder>mplwidget_2</zorder>
+   <zorder>comboBox</zorder>
+   <zorder>groupBox_2</zorder>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1062</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MatplotlibWidget</class>
+   <extends>QWidget</extends>
+   <header>matplotlibwidget</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>comboBox</tabstop>
+  <tabstop>CommandList</tabstop>
+  <tabstop>CommandVal</tabstop>
+  <tabstop>CommandSend</tabstop>
+  <tabstop>comboBox_2</tabstop>
+ </tabstops>
+ <resources>
+  <include location="HEXITEC-Control.qrc"/>
+ </resources>
+ <connections/>
+</ui>
